@@ -1,0 +1,31 @@
+
+dim tmp(255)
+#################################################################################
+
+event system_boot(major ,minor ,patch ,build ,ll_version ,protocol_version ,hw )
+#set to advertising mode
+	# tmp(0:5) = "hello"
+	
+	call gap_set_mode(gap_general_discoverable,gap_undirected_connectable)
+#set bondable mode
+	call sm_set_bondable_mode(1)
+#start timer at 1second interval, handle 0, and repeating
+	# call hardware_set_soft_timer(32768,0,0)
+	
+	# call attributes_write(attData, 0, 5, tmp(0:5))
+	tmp(0:4) = "test"
+	call attributes_write(attData,0,4,tmp(0:4))
+
+end
+
+event attributes_value(connection, reason, handle, offset, value_len, value)
+# remote device write to characteristic 2
+	# tmp
+	# call attributes_write(attData, 0, 255, tmp(0:255))
+	call attributes_write(attData, offset, value_len, value(0:value_len))
+end
+
+event connection_disconnected(handle,result)
+#connection disconnected, continue advertising
+    call gap_set_mode(gap_general_discoverable,gap_undirected_connectable)
+end
